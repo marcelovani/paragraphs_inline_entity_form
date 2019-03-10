@@ -6,7 +6,6 @@ package: Paragraphs
 dependencies:
   - paragraphs:paragraphs
   - entity:entity
-  - entity_embed:entity_embed
   - entity_browser:entity_browser
   - entity_browser:entity_browser_entity_form
   - entity_embed:entity_embed

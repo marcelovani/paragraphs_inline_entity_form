@@ -2,14 +2,242 @@
 /**
  * @file Module.
  */
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\CloseDialogCommand;
+use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\SetDialogTitleCommand;
+use Drupal\Core\Ajax\RedirectCommand;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Form\FormStateInterface;
+/**
+ * Implements hook_entity_type_build().
+ */
+function paragraphs_inline_entity_form_entity_type_build(array &$entity_types) {
+  /* @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  // Add forms for Paragraphs without overriding the default forms.
+  //$entity_types['paragraph']->setFormClass('paragraphs_inline_entity_add', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsController:addForm');
+  $entity_types['paragraph']->setFormClass('paragraphs_inline_entity_add', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsEntityEmbedDialog');
+  $entity_types['paragraph']->setFormClass('paragraphs_inline_entity_edit', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsForm');
+
+  //$entity_types['paragraph']->setFormClass('paragraphs_inline_entity_edit', '\Drupal\geysir\Form\GeysirModalParagraphForm');
+
+  syslog(5, 'DDD P Entity type build');
+}
 
 /**
  * Implements hook_form_alter().
  */
-function paragraphs_inline_entity_form_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  syslog(5, 'DDD P Form alter id ' . $form_id);
+
+  $route = \Drupal::routeMatch()->getRouteName();
+  syslog(5, 'DDD P Route ' . $route);
+
+  if (in_array($route, ['entity_browser.paragraph_items'])) {
+    $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
+  }
+
   /* @var Drupal\Core\Entity\FieldableEntityInterface $entity */
   $formObject = $form_state->getFormObject();
-  if ($formObject instanceof \Drupal\Core\Entity\EntityFormInterface) {
-    $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
+
+  syslog(5, 'DDD P class ' . get_class($formObject));
+
+//  Drupal\entity_browser\Form\EntityBrowserForm
+//  if ($formObject instanceof \Drupal\Core\Entity\EntityFormInterface) {
+//    //$form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
+//  }
+//  if ($formObject instanceof \Drupal\paragraphs_inline_entity_form\Form\ParagraphsForm) {
+//    //stop
+//    //echo '';
+//  }
+  if ($formObject instanceof \Drupal\entity_embed\Form\EntityEmbedDialog) {
+    $step = paragraphs_inline_entity_form_get_step($form, $form_state);
+    switch ($step) {
+      case 'select':
+        syslog(5, 'DDD P step ' . $step  . ' attributes ' . var_export($form['attributes'], 1));
+        break;
+
+      case 'embed':
+        syslog(5, 'DDD P step ' . $step  . ' attributes ' . var_export($form['attributes'], 1));
+        break;
+
+      default;
+        break;
+    }
+  }
+
+//  if ($form_state->get('step') == 'embed') {
+//    if (isset($form_attributes['data-entity-uuid']['#value'])) {
+//      $uuid = NULL;
+//      if (isset($form_attributes['data-entity-uuid']['#value'])) {
+//        $uuid = $form_attributes['data-entity-uuid']['#value'];
+//      }
+//      elseif
+//      (isset($form_attributes['data-entity-uuid']['#title'])) {
+//        $uuid = $form_attributes['data-entity-uuid']['#title'];
+//      }
+//      syslog(5, 'DDD P uuid ' . $uuid);
+//
+//      // @Todo check if its $form['entity_browser']['#entity_browser'] == 'paragraph_items'
+//      $form['entity']['#markup'] = $uuid;
+//      $form_state->set('entity_uuid', $uuid);
+//
+//      $form['actions']['Edit 2'] = [
+//        '#type' => 'submit',
+//        '#value' => t('Back 2'),
+//        '#submit' => [],
+//        '#ajax' => [
+//          'callback' => 'back4Submit',
+//          'event' => 'click',
+//        ],
+//      ];
+//    }
+//  }
+}
+
+/**
+ * Gets the current step of entity embed.
+ * It also checks that the browser type is a paragraph_item.
+ *
+ * @param $form array
+ *    The form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *    The form state
+ * @return $step string
+ *    The step
+ */
+function paragraphs_inline_entity_form_get_step(&$form, FormStateInterface $form_state) {
+  $step = NULL;
+  if ($form_state->get('step') == 'select'
+    && isset($form['entity_browser']['#entity_browser'])
+    && isset($form_attributes['data-entity-type'])
+    && $form['entity_browser']['#entity_browser'] == 'paragraph_items'
+    && $form['attributes']['data-entity-type']['#value'] == 'paragraph') {
+      $step = $form_state->get('step');
+  }
+
+  return $step;
+}
+
+/**
+ * Submit and show select step after submit.
+ *
+ * @param array $form
+ *   The form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ *
+ * @return \Drupal\Core\Ajax\AjaxResponse
+ *   The ajax response.
+ */
+ function back2Submit(array &$form, $form_state) {
+   syslog(5, 'DDD P Submit handler start');
+   $uuid = $form_state->get('entity_uuid');
+   syslog(5, 'DDD P uuid' . $uuid);
+
+
+   $response = new AjaxResponse();
+
+   //$form_state->set('step', 'embed');
+   //$form_state->set('step', 'edit');
+   $form_state->set('step', 'select');
+   //$form_state->set('step', 'review');
+   $form_state->setRebuild(TRUE);
+
+   /** @var Drupal\Core\Form\FormBuilder $form_builder */
+   $form_builder = \Drupal::service('form_builder');
+   //syslog(5, var_export(get_class_methods($form_builder), 1));
+   $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $form);
+//   $rebuild_form['entity_uuid'] = [
+//     '#type' => 'textfield',
+//     '#value' => '1234567890',
+//   ];
+
+   //$rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
+   unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+   $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $rebuild_form));
+   //$response->addCommand(new SetDialogTitleCommand('', $rebuild_form['#title']));
+   $response->addCommand(new SetDialogTitleCommand('', 'Edit'));
+
+   syslog(5, 'DDD P Submit handler end');
+//print_r($response);exit;
+   return $response;
+
+//   return (new AjaxResponse())
+//     ->addCommand(
+//       new InvokeCommand(
+//         NULL,
+//         'ParagraphEditorDialogSaveAndCloseModalDialog',
+//         [
+//           $form_state->getValues()['attributes'] +
+//           ['data-paragraph-id' => '0987654321'],
+//         ]
+//       )
+//     );
+
+  //return $form;
+  //return $this->submitStep($form, $form_state, 'select');
+}
+
+function back4Submit(array $form,  $form_state) {
+  $uuid = $form_state->get('entity_uuid');
+  syslog(5, 'DDD P uuid' . $uuid);
+
+  $entity_type_manager = \Drupal::service('entity_type.manager');
+  syslog(5, 'DDD P 2 ' . $uuid);
+
+  $entity = $entity_type_manager->getStorage('paragraph')
+    ->loadByProperties(['uuid' => $uuid]);
+  syslog(5, 'DDD P 3 ' . $uuid);
+
+  /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
+  $paragraph = current($entity);
+  //syslog(5, 'DDD edit entity ' . var_export(get_class_methods($paragraph),1));
+  //syslog(5, 'DDD edit getEntityType ' . var_export($paragraph->getEntityType()->id(),1));
+  syslog(5, 'DDD P edit getEntityTypeId ' . $paragraph->getEntityTypeId());
+  syslog(5, 'DDD P edit uuid ' . $paragraph->uuid());
+
+    $response = new AjaxResponse();
+    /** @var \Drupal\Core\Entity\EntityFormBuilder $form_builder */
+  $form_builder = \Drupal::service('entity.form_builder');
+  $form = $form_builder->getForm($paragraph, 'paragraphs_inline_entity_edit', []);
+  //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
+  //$response->addCommand(new GeysirOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => $paragraph_title]), render($form)));
+
+  $form_builder = \Drupal::service('form_builder');
+  $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $form);
+  unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+
+  $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));
+  $response->addCommand(new SetDialogTitleCommand('', 'Edit'));
+
+  return $response;
+}
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * On displaying the iframe hide all page elements except that what is inside.
+ */
+function paragraphs_inline_entity_form_preprocess_html(&$variables) {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if (in_array($route, ['entity_browser.paragraph_items'])) {
+    if (isset($variables['page_top'])) {
+      $variables['page_top']['#access'] = FALSE;
+    }
+    if (isset($variables['page_bottom'])) {
+      $variables['page_bottom']['#access'] = FALSE;
+    }
+    if (isset($variables['page'])) {
+      foreach (array_keys($variables['page']) as $key) {
+        if (strpos($key, '#') !== 0 && $key !== 'content') {
+          $variables['page'][$key]['#access'] = FALSE;
+        }
+      }
+    }
   }
 }
