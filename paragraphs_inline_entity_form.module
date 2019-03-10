@@ -2,6 +2,7 @@
 /**
  * @file Module.
  */
+
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseDialogCommand;
 use Drupal\Core\Ajax\InvokeCommand;
@@ -13,6 +14,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Implements hook_entity_type_build().
  */
@@ -58,11 +60,27 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
     $step = paragraphs_inline_entity_form_get_step($form, $form_state);
     switch ($step) {
       case 'select':
-        syslog(5, 'DDD P step ' . $step  . ' attributes ' . var_export($form['attributes'], 1));
+        syslog(5, 'DDD P step ' . $step . ' attributes ' . var_export($form['attributes'], 1));
         break;
 
       case 'embed':
-        syslog(5, 'DDD P step ' . $step  . ' attributes ' . var_export($form['attributes'], 1));
+        $uuid = $form['attributes']['data-entity-uuid']['#value'];
+
+        syslog(5, 'DDD P step ' . $step . ' attributes ' . var_export($form['attributes'], 1));
+        $form['entity']['#markup'] = $uuid;
+        $form_state->set('entity_uuid', $uuid);
+
+        $form['actions']['edit2'] = [
+          '#type' => 'submit',
+          '#value' => t('Back 2'),
+          '#submit' => [],
+          '#ajax' => [
+            'callback' => 'back4Submit',
+            'event' => 'click',
+          ],
+        ];
+
+        //kint($form);
         break;
 
       default;
@@ -103,10 +121,11 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
  * Gets the current step of entity embed.
  * It also checks that the browser type is a paragraph_item.
  *
- * @param $form array
+ * @param                                      $form array
  *    The form
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *    The form state
+ *
  * @return $step string
  *    The step
  */
@@ -117,16 +136,16 @@ function paragraphs_inline_entity_form_get_step(&$form, FormStateInterface $form
     && isset($form_attributes['data-entity-type'])
     && $form['entity_browser']['#entity_browser'] == 'paragraph_items'
     && $form['attributes']['data-entity-type']['#value'] == 'paragraph') {
-      $step = $form_state->get('step');
+    $step = $form_state->get('step');
   }
 
-  return $step;
+  return $form_state->get('step');
 }
 
 /**
  * Submit and show select step after submit.
  *
- * @param array $form
+ * @param array                                $form
  *   The form array.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state.
@@ -134,38 +153,38 @@ function paragraphs_inline_entity_form_get_step(&$form, FormStateInterface $form
  * @return \Drupal\Core\Ajax\AjaxResponse
  *   The ajax response.
  */
- function back2Submit(array &$form, $form_state) {
-   syslog(5, 'DDD P Submit handler start');
-   $uuid = $form_state->get('entity_uuid');
-   syslog(5, 'DDD P uuid' . $uuid);
+function back2Submit(array &$form, $form_state) {
+  syslog(5, 'DDD P Submit handler start');
+  $uuid = $form_state->get('entity_uuid');
+  syslog(5, 'DDD P uuid' . $uuid);
 
+  $response = new AjaxResponse();
 
-   $response = new AjaxResponse();
+  //$form_state->set('step', 'embed');
+  //$form_state->set('step', 'edit');
+  $form_state->set('step', 'select');
+  //$form_state->set('step', 'review');
+  $form_state->setRebuild(TRUE);
 
-   //$form_state->set('step', 'embed');
-   //$form_state->set('step', 'edit');
-   $form_state->set('step', 'select');
-   //$form_state->set('step', 'review');
-   $form_state->setRebuild(TRUE);
-
-   /** @var Drupal\Core\Form\FormBuilder $form_builder */
-   $form_builder = \Drupal::service('form_builder');
-   //syslog(5, var_export(get_class_methods($form_builder), 1));
-   $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $form);
+  /** @var Drupal\Core\Form\FormBuilder $form_builder */
+  $form_builder = \Drupal::service('form_builder');
+  //syslog(5, var_export(get_class_methods($form_builder), 1));
+  $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $form);
 //   $rebuild_form['entity_uuid'] = [
 //     '#type' => 'textfield',
 //     '#value' => '1234567890',
 //   ];
 
-   //$rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
-   unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
-   $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $rebuild_form));
-   //$response->addCommand(new SetDialogTitleCommand('', $rebuild_form['#title']));
-   $response->addCommand(new SetDialogTitleCommand('', 'Edit'));
+  //$rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
+  unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+  $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $rebuild_form));
+  //$response->addCommand(new SetDialogTitleCommand('', $rebuild_form['#title']));
+  $response->addCommand(new SetDialogTitleCommand('', 'Edit'));
 
-   syslog(5, 'DDD P Submit handler end');
+  syslog(5, 'DDD P Submit handler end');
+
 //print_r($response);exit;
-   return $response;
+  return $response;
 
 //   return (new AjaxResponse())
 //     ->addCommand(
@@ -183,7 +202,7 @@ function paragraphs_inline_entity_form_get_step(&$form, FormStateInterface $form
   //return $this->submitStep($form, $form_state, 'select');
 }
 
-function back4Submit(array $form,  $form_state) {
+function back4Submit(array $form, $form_state) {
   $uuid = $form_state->get('entity_uuid');
   syslog(5, 'DDD P uuid' . $uuid);
 
@@ -201,8 +220,8 @@ function back4Submit(array $form,  $form_state) {
   syslog(5, 'DDD P edit getEntityTypeId ' . $paragraph->getEntityTypeId());
   syslog(5, 'DDD P edit uuid ' . $paragraph->uuid());
 
-    $response = new AjaxResponse();
-    /** @var \Drupal\Core\Entity\EntityFormBuilder $form_builder */
+  $response = new AjaxResponse();
+  /** @var \Drupal\Core\Entity\EntityFormBuilder $form_builder */
   $form_builder = \Drupal::service('entity.form_builder');
   $form = $form_builder->getForm($paragraph, 'paragraphs_inline_entity_edit', []);
   //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
