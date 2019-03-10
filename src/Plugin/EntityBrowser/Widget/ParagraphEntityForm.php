@@ -4,6 +4,8 @@ namespace Drupal\paragraphs_inline_entity_form\Plugin\EntityBrowser\Widget;
 
 use Drupal\entity_browser_entity_form\Plugin\EntityBrowser\Widget\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
  * A wrapper for EntityForm to provide a two step form where on the first step
@@ -17,7 +19,6 @@ use Drupal\Core\Form\FormStateInterface;
  * )
  */
 class ParagraphEntityForm extends EntityForm {
-
   /**
    * {@inheritdoc}
    */
@@ -45,10 +46,70 @@ class ParagraphEntityForm extends EntityForm {
 
   /**
    * {@inheritdoc}
-   * 
+   *
    * @todo fix the edit form
    */
   public function getForm(array &$original_form, FormStateInterface $form_state, array $additional_widget_parameters) {
+    //@todo move to a class
+    /** @var \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store */
+    $temp_store = \Drupal::service('tempstore.private');
+    $temp_store = $temp_store->get('paragraphs_inline_entity_form');
+    $entity_data = $temp_store->get('entity_data');
+
+    syslog(5, 'DDD PE getForm');
+    //syslog(5, 'DDD PE data ' . var_export($entity_data, 1));
+
+    if ($entity_uuid = paragraphs_inline_entity_form_embed_get_entity_data_value($entity_data, 'uuid')) {
+      $temp_store->delete('entity_data');
+      syslog(5, 'DDD PE deleted entity data');
+
+      //@todo display edit form
+      syslog(5, 'DDD PE show edit form');
+
+      $entity = NULL;
+      //@todo inject
+      $entity_type_manager = \Drupal::service('entity_type.manager');
+      if ($entity = $entity_type_manager
+        ->getStorage('paragraph')
+        ->loadByProperties(['uuid' => $entity_uuid])) {
+        $paragraph = current($entity);
+
+        $response = new AjaxResponse();
+        $entity_form_builder = \Drupal::service('entity.form_builder');
+        //$form = $entity_form_builder->getForm($paragraph, 'paragraphs_inline_entity_form_edit', []);
+        $form = $entity_form_builder->getForm($paragraph);
+        kint($form);
+        return $form;
+        //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
+        //$response->addCommand(new GeysirOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => $paragraph_title]), render($form)));
+        $response->addCommand(new ReplaceCommand(
+          '#entity_browser_iframe_paragraph_items',
+          $form
+        ));
+        return $response;
+
+
+        //@todo inject
+//        $form_form_builder = \Drupal::service('entity.form_builder');
+//        $edit_form = $form_form_builder->getForm($paragraph);
+
+        //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
+        //$response->addCommand(new GeysirOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => $paragraph_title]), render($form)));
+//        $form_builder = \Drupal::service('form_builder');
+//        $form_state->setRebuild(TRUE);
+//        $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $edit_form);
+//        unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+//        $form = $rebuild_form;
+//        return $form;
+
+
+        //$edit_form = $form_builder->getForm($paragraph, 'paragraphs_inline_entity_edit', []);
+        //$edit_form = $form_builder->getForm($paragraph);
+//kint($edit_form);
+//        return $edit_form;
+      }
+    }
+
     if (empty($this->configuration['entity_type']) || empty($this->configuration['form_mode'])) {
       return ['#markup' => $this->t('The settings for %label widget are not configured correctly.', ['%label' => $this->label()])];
     }
@@ -60,14 +121,19 @@ class ParagraphEntityForm extends EntityForm {
 
     if ($this->configuration['bundle'] == '0') {
       $form = $this->entitySelectorForm($original_form, $form_state, $additional_widget_parameters);
+
       return $form;
     }
 
     if ($form_state->has(['entity_browser', 'widget_context'])) {
-      $this->handleWidgetContext($form_state->get(['entity_browser', 'widget_context']));
+      $this->handleWidgetContext($form_state->get([
+        'entity_browser',
+        'widget_context'
+      ]));
     }
 
     $form = parent::getForm($original_form, $form_state, $additional_widget_parameters);
+    syslog(5, 'DDD PE ');
 
     $form['#submit'] = [
       ['Drupal\inline_entity_form\ElementSubmit', 'trigger']
@@ -99,7 +165,17 @@ class ParagraphEntityForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function entitySelectorForm(array &$original_form, FormStateInterface $form_state, array $additional_widget_parameters) {
+  public
+  function entitySelectorForm(array &$original_form, FormStateInterface $form_state, array $additional_widget_parameters) {
+    syslog(5, 'DDD PE Par selector');
+
+    //@todo move to a class
+    /** @var \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store */
+    $temp_store = \Drupal::service('tempstore.private');
+    $temp_store = $temp_store->get('paragraphs_inline_entity_form');
+    $temp_store->delete('entity_data');
+    syslog(5, 'DDD PE deleted entity data');
+
     $path_parts = array_values(array_filter($additional_widget_parameters['path_parts']));
 
     $form['#prefix'] = '<div id="paragraphs-wysiwyg">';
@@ -114,7 +190,8 @@ class ParagraphEntityForm extends EntityForm {
     $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
 
     if ($path_parts[0] == 'entity-embed') {
-      $embed_button = $this->entityTypeManager->getStorage('embed_button')->load($path_parts[3]);
+      $embed_button = $this->entityTypeManager->getStorage('embed_button')
+        ->load($path_parts[3]);
     }
     $allowed_bundles = $embed_button->getTypeSetting('bundles');
     $bundles = $this->getAllowedBundles($allowed_bundles);
@@ -123,8 +200,11 @@ class ParagraphEntityForm extends EntityForm {
     foreach ($bundles as $bundle => $label) {
       $icon_url = $default_icon;
       if ($paragraphs_type_storage->load($bundle)->getIconFile()) {
-        $style = $this->entityTypeManager->getStorage('image_style')->load('thumbnail');
-        $path = $paragraphs_type_storage->load($bundle)->getIconFile()->getFileUri();
+        $style = $this->entityTypeManager->getStorage('image_style')
+          ->load('thumbnail');
+        $path = $paragraphs_type_storage->load($bundle)
+          ->getIconFile()
+          ->getFileUri();
         $icon_url = $style->buildUrl($path);
       }
 
@@ -152,7 +232,8 @@ class ParagraphEntityForm extends EntityForm {
    * @return array
    *   Array with allowed Paragraph bundles.
    */
-  protected function getAllowedBundles($allowed_bundles = NULL) {
+  protected
+  function getAllowedBundles($allowed_bundles = NULL) {
     $bundles = $this->entityTypeBundleInfo->getBundleInfo('paragraph');
     if (is_array($allowed_bundles) && count($allowed_bundles)) {
       // Preserve order of allowed bundles setting.
@@ -172,5 +253,4 @@ class ParagraphEntityForm extends EntityForm {
 
     return $bundles;
   }
-
 }

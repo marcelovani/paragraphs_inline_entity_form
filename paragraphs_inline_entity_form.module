@@ -4,12 +4,151 @@
  */
 
 /**
+ * Implements hook_entity_type_build().
+ */
+function paragraphs_inline_entity_form_entity_type_build(array &$entity_types) {
+  /* @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  $entity_types['paragraph']->setFormClass('paragraphs_inline_entity_form_edit', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphForm');
+}
+
+/**
  * Implements hook_form_alter().
+ *
+ * @todo move this code to a class.
  */
 function paragraphs_inline_entity_form_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  /** @var \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store */
+  $temp_store = \Drupal::service('tempstore.private'); //@check formObject and do only for the embed forms
+  //@todo this will be injected on the class where this code belongs
+
   /* @var Drupal\Core\Entity\FieldableEntityInterface $entity */
   $formObject = $form_state->getFormObject();
+  syslog(5, 'DDD ' . get_class($formObject));
+
   if ($formObject instanceof \Drupal\Core\Entity\EntityFormInterface) {
+    //@todo check if the form should be altered buy this module i.e. is_paragraphs_inline_entity_form_embed($form)
     $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
   }
+
+  if ($formObject instanceof \Drupal\entity_embed\Form\EntityEmbedDialog) {
+    // @todo dont just add this everhywhere
+    $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
+    syslog(5, 'DDD ' . $form_state->get('step'));
+
+    switch ($form_state->get('step')) {
+      case 'embed':
+        if (is_paragraphs_inline_entity_form_embed($form)) {
+          $entity_uuid = paragraphs_inline_entity_form_embed_get_entity_data_value($form['attributes'], 'uuid');
+          $temp_store->get('paragraphs_inline_entity_form')
+            ->set('entity_data', $form['attributes']);
+
+          syslog(5, 'DDD stored data for ' . $entity_uuid);
+        }
+        break;
+
+      case 'select':
+        /** @var \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store */
+        $temp_store = \Drupal::service('tempstore.private');
+        $temp_store = $temp_store->get('paragraphs_inline_entity_form');
+        $entity_data = $temp_store->get('entity_data');
+        if ($entity_uuid = paragraphs_inline_entity_form_embed_get_entity_data_value($entity_data, 'uuid')) {
+          syslog(5, 'DDD from store ' . $entity_uuid);
+          $form['entity_uuid'] = [
+            '#markup' => $entity_uuid,
+          ];
+          unset($form['actions']);
+//          kint($form);
+        }
+
+//          if (isset($form_data['data-entity-uuid'])) {
+//            kint($form_data);
+//            exit;
+//        if (
+//        $entity = $this->entityTypeManager()
+//          ->getStorage('paragraph')
+//          ->loadByProperties(['uuid' => $form_data['data-entity-uuid']])) {
+//          $paragraph = current($entity);
+//
+//          $form_builder = \Drupal::service('entity.form_builder');
+//
+//          //$edit_form = $form_builder->getForm($paragraph, 'paragraphs_inline_entity_edit', []);
+//          $edit_form = $form_builder->getForm($paragraph);
+//          $form = $edit_form;
+//
+//          return $form;
+//          //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
+//          //$response->addCommand(new GeysirOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => $paragraph_title]), render($form)));
+//          $form_builder = \Drupal::service('form_builder');
+//          $form_state->setRebuild(TRUE);
+//          $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $edit_form);
+//          unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+//          $form = $rebuild_form;
+//          return $form;
+//          }
+        break;
+
+      default:
+        syslog(5, 'DDD STEP NOT TRACKED: ' . $form_state->get('step'));
+    }
+  }
+
+  //kint($_REQUEST);
+//      kint($form);
+//      kint($form_state);exit;
+//    if (isset($form['attributes']['data-entity-uuid'])) {
+//      $uuid = $form['attributes']['data-entity-uuid'];
+//      $entity_type_manager = \Drupal::service('entity_type.manager');
+
+//        $cid = "paragraphs_inline_entity_form-data-entity-uuid";
+//        \Drupal::cache()->set($cid, $form['attributes'], Cache::PERMANENT);
+//
+
+//      return;
+//
+//      if ($entity = $entity_type_manager
+//        ->getStorage('paragraph')
+//        ->loadByProperties(['uuid' => $uuid])) {
+//        $paragraph = current($entity);
+//
+//        $form_builder = \Drupal::service('entity.form_builder');
+//
+//        //$edit_form = $form_builder->getForm($paragraph, 'paragraphs_inline_entity_edit', []);
+//        $edit_form = $form_builder->getForm($paragraph);
+//        //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
+//        //$response->addCommand(new GeysirOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => $paragraph_title]), render($form)));
+//        $form_builder = \Drupal::service('form_builder');
+//        $form_state->setRebuild(TRUE);
+//        $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $edit_form);
+//        unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+//        $form = $rebuild_form;
+//      }
+//    }
+//  }
+}
+
+/**
+ * Helper to check that the embed belongs to this module.
+ * This is useful to prevent changing widgets provided by unrelated modules.
+ */
+function is_paragraphs_inline_entity_form_embed($form) {
+  if (isset($form['attributes']['data-embed-button']['#value'])) {
+    return $form['attributes']['data-embed-button']['#value'] == 'paragraphs_inline_entity_form';
+  }
+}
+
+/**
+ * Gets properties
+ *
+ * @todo move to a class
+ *
+ * @param $form
+ * @param $key
+ */
+function paragraphs_inline_entity_form_embed_get_entity_data_value($data, $key) {
+  syslog(5, 'DDD get value for ' . "['data-entity-$key]['#value']");
+  if (isset($data['data-entity-' . $key]['#value'])) {
+    syslog(5, 'DDD found '. $data['data-entity-' . $key]['#value']);
+    return $data['data-entity-' . $key]['#value'];
+  }
+  syslog(5, 'DDD not found in ' . var_export($data,1));
 }
