@@ -1,4 +1,4 @@
-name: Paragraphs Inline Entity Form Test
+name: Paragraphs Inline Entity Form Example
 type: module
 description: 'Provides Test scaffolds for Paragraphs Inline Entity Form Test module.'
 core: 8.x
