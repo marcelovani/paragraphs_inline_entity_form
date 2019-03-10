@@ -1,14 +1,7 @@
 /**
  * @file
  * Default styling for paragraphs-wysiwyg dialogs.
- *
- * @see core/themes/classy/css/components/dialog.css
- * @see core/themes/bartik/css/components/ui-dialog.css
  */
-
-#entity_browser_iframe_paragraph_items {
-    border: solid 1px #ccc;
-}
 
 #paragraphs-wysiwyg .paragraphs-wysiwyg-add-type {
     border: 2px solid #ffffff;
@@ -35,3 +28,19 @@
     max-width: 100px;
     overflow: hidden;
 }
+
+body.page--entity_browser-paragraph_type-paragraph_items #main-content .block-page-title-block {
+    min-height: 5px;
+}
+body.page--entity_browser-paragraph_type-paragraph_items #main-content h1 {
+    /*display: none;*/
+}
+body.page--entity_browser-paragraph_type-paragraph_items #main-content .page-content {
+    margin-bottom: 0;
+}
+/*#edit-inline-entity-form .js-form-item label {*/
+    /*display: block;*/
+    /*font-size: x-large;*/
+    /*color: black;*/
+    /*font-weight: bolder;*/
+/*}*/

@@ -1,0 +1,18 @@
+paragraphs_inline_entity_form.edit.dialog:
+  path: '/paragraph-inline-entity/dialog/{uuid}'
+  defaults:
+    _controller: '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsForm'
+  requirements:
+    _permission: 'administer paragraphs types'
+  options:
+    _admin_route: TRUE
+
+paragraphs_inline_entity_form.edit:
+  path: '/paragraph-inline-entity/edit/{uuid}'
+  defaults:
+    _title: 'Edit'
+    _controller: '\Drupal\paragraphs_inline_entity_form\Controller\ParagraphsController::edit'
+  requirements:
+    _permission: 'administer paragraphs types'
+  options:
+    _admin_route: TRUE

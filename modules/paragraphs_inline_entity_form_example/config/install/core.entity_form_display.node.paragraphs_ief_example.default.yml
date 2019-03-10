@@ -8,7 +8,6 @@ dependencies:
   module:
     - paragraphs
     - path
-    - scheduler
     - text
 id: node.paragraphs_ief_example.default
 targetEntityType: node

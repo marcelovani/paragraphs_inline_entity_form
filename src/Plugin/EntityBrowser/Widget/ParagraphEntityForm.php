@@ -45,13 +45,12 @@ class ParagraphEntityForm extends EntityForm {
 
   /**
    * {@inheritdoc}
-   * 
+   *
    * @todo fix the edit form
    */
   public function getForm(array &$original_form, FormStateInterface $form_state, array $additional_widget_parameters) {
-    if (empty($this->configuration['entity_type']) || empty($this->configuration['form_mode'])) {
-      return ['#markup' => $this->t('The settings for %label widget are not configured correctly.', ['%label' => $this->label()])];
-    }
+    syslog(5, 'DDD PE getForm ' . var_export($_REQUEST, 1));
+    syslog(5, 'DDD PE widget ' . var_export($additional_widget_parameters, 1));
 
     // Check if we need to show the content type selector form or the entity create form
     if (!empty($form_state->getUserInput()['selected_bundle'])) {
@@ -72,16 +71,24 @@ class ParagraphEntityForm extends EntityForm {
     $form['#submit'] = [
       ['Drupal\inline_entity_form\ElementSubmit', 'trigger']
     ];
-    $form['actions'] = [
-      '#type' => 'actions',
-      'submit' => [
-        '#type' => 'submit',
-        '#value' => $this->configuration['submit_text'],
-        '#eb_widget_main_submit' => (empty($form_state->getValues())) ? FALSE : TRUE,
-        '#attributes' => ['class' => ['is-entity-browser-submit']],
-        '#button_type' => 'primary',
-      ],
-    ];
+//    $form['actions'] = [
+//      '#type' => 'actions',
+//      'back' => [
+//        '#type' => 'submit',
+//        '#value' => $this->t('Back'),
+//        '#attributes' => ['class' => ['is-entity-browser-submit']],
+//      ],
+//      'submit' => [
+//        '#type' => 'submit',
+//        '#value' => $this->configuration['submit_text'],
+//        //'#eb_widget_main_submit' => (empty($form_state->getValues())) ? FALSE : TRUE,
+//        '#attributes' => ['class' => ['is-entity-browser-submit']],
+//        '#button_type' => 'primary',
+//      ],
+//    ];
+//    return $form;
+
+    $form['actions']['submit']['#eb_widget_main_submit'] = (empty($form_state->getValues())) ? FALSE : TRUE;
     $form['actions']['submit']['#ief_submit_trigger'] = TRUE;
     $form['actions']['submit']['#ief_submit_trigger_all'] = TRUE;
     $form['#attached']['drupalSettings']['entity_browser_widget']['auto_select'] = TRUE;
@@ -108,9 +115,9 @@ class ParagraphEntityForm extends EntityForm {
       '#type' => 'hidden',
       '#value' => '',
     ];
-    $form['actions'] = [
-      '#type' => 'actions',
-    ];
+//    $form['actions'] = [
+//      '#type' => 'actions',
+//    ];
     $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
 
     if ($path_parts[0] == 'entity-embed') {
