@@ -4,4 +4,10 @@ description: 'Provides Test scaffolds for Paragraphs Inline Entity Form Test mod
 core: 8.x
 package: Paragraphs
 dependencies:
+  - drupal:image
+  - drupal:block
+  - drupal:block_content
+  - drupal:path
+  - drupal:menu_ui
+  - drupal:views
   - paragraphs_inline_entity_form:paragraphs_inline_entity_form
