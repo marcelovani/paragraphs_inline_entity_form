@@ -71,14 +71,10 @@ function paragraphs_inline_entity_form_form_alter(&$form, \Drupal\Core\Form\Form
             '#value' => t('Edit'),
             '#submit' => [],
             '#ajax' => [
-              'callback' => 'showedit',
+              'callback' => 'back4Submit',
               'event' => 'click',
             ],
           ];
-
-
-
-//          kint($form);
         }
 
 //          if (isset($form_data['data-entity-uuid'])) {
@@ -197,5 +193,29 @@ function showedit(array &$form, $form_state) {
   $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));
   $response->addCommand(new SetDialogTitleCommand('', 'Edit'));
 //
+  return $response;
+}
+
+function back4Submit(array $form, $form_state) {
+  $uuid = $form_state->get('entity_uuid');
+  $entity_type_manager = \Drupal::service('entity_type.manager');
+  $entity = $entity_type_manager->getStorage('paragraph')
+    ->loadByProperties(['uuid' => $uuid]);
+  /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
+  $paragraph = current($entity);
+  $response = new AjaxResponse();
+  /** @var \Drupal\Core\Entity\EntityFormBuilder $form_builder */
+  $form_builder = \Drupal::service('entity.form_builder');
+  $form = $form_builder->getForm($paragraph, 'paragraphs_inline_entity_form_edit', []);
+  //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
+  //$response->addCommand(new GeysirOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => $paragraph_title]), render($form)));
+
+//  $form_builder = \Drupal::service('form_builder');
+//  $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $form);
+//  unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+
+  $response->addCommand(new HtmlCommand('.entity-browser-iframe-container', $form));
+  $response->addCommand(new SetDialogTitleCommand('', 'Edit'));
+
   return $response;
 }
