@@ -74,20 +74,47 @@ class ParagraphEntityForm extends EntityForm {
         ->loadByProperties(['uuid' => $entity_uuid])) {
         $paragraph = current($entity);
 
-        $response = new AjaxResponse();
         $entity_form_builder = \Drupal::service('entity.form_builder');
+//        $form = $entity_form_builder->getForm($paragraph);
+//return $form;
+
+//        $response = new AjaxResponse();
+//        $form_state->setRebuild(TRUE);
+//        $rebuild_form = $this->formBuilder->rebuildForm('entity_embed_dialog', $form_state, $form);
+//        unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+//        $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $rebuild_form));
+//        $response->addCommand(new SetDialogTitleCommand('', $rebuild_form['#title']));
+//        return $response;
+
+        $response = new AjaxResponse();
         //$form = $entity_form_builder->getForm($paragraph, 'paragraphs_inline_entity_form_edit', []);
         $form = $entity_form_builder->getForm($paragraph);
-        kint($form);
-        return $form;
+
+        //$form_array = \Drupal::formBuilder()->getForm('\Drupal\form_test\Form\FormTestCheckboxTypeJugglingForm', $default_value, $return_value);
+        $renderer = \Drupal::service('renderer');
+
+        //$html = $renderer->render($form['selection_display']['selected']['items_' . $last_entity_id . '_' . $selected_entity_keys[$key_index]]);
+        $html = $renderer->render($form);
+
+        $response->addCommand(
+          new ReplaceCommand('#entity_browser_iframe_paragraph_items', 'aaaaaa')
+        );
+
+//print_r($form);
+        //kint($form);
+        //return $form;
         //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
         //$response->addCommand(new GeysirOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => $paragraph_title]), render($form)));
-        $response->addCommand(new ReplaceCommand(
-          '#entity_browser_iframe_paragraph_items',
-          $form
-        ));
-        return $response;
+//        $response->addCommand(new ReplaceCommand(
+//          '#entity_browser_iframe_paragraph_items',
+//          $form));
+//
+//        $response->addCommand(new ReplaceCommand(
+//          '#entity_browser_iframe_paragraph_items',
+//          $form
+//        ));
 
+        return $response;
 
         //@todo inject
 //        $form_form_builder = \Drupal::service('entity.form_builder');
@@ -101,7 +128,6 @@ class ParagraphEntityForm extends EntityForm {
 //        unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
 //        $form = $rebuild_form;
 //        return $form;
-
 
         //$edit_form = $form_builder->getForm($paragraph, 'paragraphs_inline_entity_edit', []);
         //$edit_form = $form_builder->getForm($paragraph);

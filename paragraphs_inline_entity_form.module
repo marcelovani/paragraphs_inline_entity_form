@@ -3,6 +3,9 @@
  * @file Module.
  */
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
+
 /**
  * Implements hook_entity_type_build().
  */
@@ -42,6 +45,8 @@ function paragraphs_inline_entity_form_form_alter(&$form, \Drupal\Core\Form\Form
           $temp_store->get('paragraphs_inline_entity_form')
             ->set('entity_data', $form['attributes']);
 
+          $form['entity']['#markup'] = $entity_uuid;
+
           syslog(5, 'DDD stored data for ' . $entity_uuid);
         }
         break;
@@ -56,7 +61,23 @@ function paragraphs_inline_entity_form_form_alter(&$form, \Drupal\Core\Form\Form
           $form['entity_uuid'] = [
             '#markup' => $entity_uuid,
           ];
+          $form['iframe'] = [
+            '#markup' => '<iframe src="/user"></iframe>',
+          ];
           unset($form['actions']);
+          $form_state->set('entity_uuid', $entity_uuid);
+          $form['actions']['showedit'] = [
+            '#type' => 'submit',
+            '#value' => t('Edit'),
+            '#submit' => [],
+            '#ajax' => [
+              'callback' => 'showedit',
+              'event' => 'click',
+            ],
+          ];
+
+
+
 //          kint($form);
         }
 
@@ -145,10 +166,36 @@ function is_paragraphs_inline_entity_form_embed($form) {
  * @param $key
  */
 function paragraphs_inline_entity_form_embed_get_entity_data_value($data, $key) {
+  if (empty($data)) {
+    return;
+  }
   syslog(5, 'DDD get value for ' . "['data-entity-$key]['#value']");
   if (isset($data['data-entity-' . $key]['#value'])) {
     syslog(5, 'DDD found '. $data['data-entity-' . $key]['#value']);
     return $data['data-entity-' . $key]['#value'];
   }
   syslog(5, 'DDD not found in ' . var_export($data,1));
+}
+
+function showedit(array &$form, $form_state) {
+  $entity_uuid = $form_state->get('entity_uuid');
+  $response = new AjaxResponse();
+  $entity_type_manager = \Drupal::service('entity_type.manager');
+  $entity = $entity_type_manager
+    ->getStorage('paragraph')
+    ->loadByProperties(['uuid' => $entity_uuid]);
+  $paragraph = current($entity);
+  //$form = $entity_form_builder->getForm($paragraph, 'paragraphs_inline_entity_form_edit', []);
+  $entity_form_builder = \Drupal::service('entity.form_builder');
+  $form1 = $entity_form_builder->getForm($paragraph);
+  $renderer = \Drupal::service('renderer');
+  $html = $renderer->render($form1);
+
+//  $response->addCommand(
+//    new ReplaceCommand('#entity_browser_iframe_paragraph_items', 'aaaaaa')
+//  );
+  $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));
+  $response->addCommand(new SetDialogTitleCommand('', 'Edit'));
+//
+  return $response;
 }
