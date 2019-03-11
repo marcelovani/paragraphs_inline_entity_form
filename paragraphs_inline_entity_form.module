@@ -58,17 +58,17 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
 //  }
   if ($formObject instanceof \Drupal\entity_embed\Form\EntityEmbedDialog) {
     $step = paragraphs_inline_entity_form_get_step($form, $form_state);
+    $temp_store = \Drupal::service('tempstore.private');
+
     switch ($step) {
-      case 'select':
-        syslog(5, 'DDD P step ' . $step . ' attributes ' . var_export($form['attributes'], 1));
-        break;
-
       case 'embed':
-        $uuid = $form['attributes']['data-entity-uuid']['#value'];
+        $entity_uuid = $form['attributes']['entity-data-uuid']['#value'];
+        $temp_store->get('paragraphs_inline_entity_form')
+          ->set('entity_data', $form['attributes']);
 
-        syslog(5, 'DDD P step ' . $step . ' attributes ' . var_export($form['attributes'], 1));
-        $form['entity']['#markup'] = $uuid;
-        $form_state->set('entity_uuid', $uuid);
+        $form['entity']['#markup'] = $entity_uuid;
+
+        $form_state->set('entity_uuid', $entity_uuid);
 
         $form['actions']['edit2'] = [
           '#type' => 'submit',
@@ -79,13 +79,36 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
             'event' => 'click',
           ],
         ];
-
-        //kint($form);
+        syslog(5, 'DDD stored data for ' . $entity_uuid);
         break;
 
-      default;
-        break;
+      case 'select':
+        /** @var \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store */
+        $temp_store = \Drupal::service('tempstore.private');
+        $temp_store = $temp_store->get('paragraphs_inline_entity_form');
+        $entity_data = $temp_store->get('entity_data');
+        $entity_uuid = $entity_data['data-entity-uuid']['#value'];
+        syslog(5, 'DDD from store ' . $entity_uuid);
+        $form['entity_uuid'] = [
+          '#markup' => $entity_uuid,
+        ];
+        $form['iframe'] = [
+          '#markup' => '<iframe src="/user"></iframe>',
+        ];
+        unset($form['actions']);
+        $form_state->set('entity_uuid', $entity_uuid);
+        $form['actions']['showedit'] = [
+          '#type' => 'submit',
+          '#value' => t('Edit'),
+          '#submit' => [],
+          '#ajax' => [
+            'callback' => 'back4Submit',
+            'event' => 'click',
+          ],
+        ];
     }
+
+    return;
   }
 
 //  if ($form_state->get('step') == 'embed') {
@@ -203,10 +226,16 @@ function back2Submit(array &$form, $form_state) {
 }
 
 function back4Submit(array $form, $form_state) {
+  /** @var \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store */
+  $temp_store = \Drupal::service('tempstore.private');
+  $temp_store = $temp_store->get('paragraphs_inline_entity_form');
+  $entity_data = $temp_store->get('entity_data');
+  $entity_uuid = $entity_data['data-entity-uuid']['#value'];
+
   $uuid = $form_state->get('entity_uuid');
   $entity_type_manager = \Drupal::service('entity_type.manager');
   $entity = $entity_type_manager->getStorage('paragraph')
-    ->loadByProperties(['uuid' => $uuid]);
+    ->loadByProperties(['uuid' => $entity_uuid]);
   /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
   $paragraph = current($entity);
   $response = new AjaxResponse();
