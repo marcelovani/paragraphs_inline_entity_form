@@ -22,8 +22,11 @@ function paragraphs_inline_entity_form_entity_type_build(array &$entity_types) {
   /* @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
   // Add forms for Paragraphs without overriding the default forms.
   //$entity_types['paragraph']->setFormClass('paragraphs_inline_entity_add', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsController:addForm');
-  $entity_types['paragraph']->setFormClass('paragraphs_inline_entity_add', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsEntityEmbedDialog');
-  $entity_types['paragraph']->setFormClass('paragraphs_inline_entity_edit', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsForm');
+//  $entity_types['paragraph']->setFormClass('paragraphs_inline_entity_add', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsEntityEmbedDialog');
+//  $entity_types['paragraph']->setFormClass('paragraphs_inline_entity_edit', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsForm');
+  $entity_types['paragraph']->setFormClass('paragraphs_inline_entity_edit', '\Drupal\paragraphs_inline_entity_form\Form\ParagraphForm');
+  $entity_types['paragraph']->setFormClass('paragraphs_inline_entity_modal_edit', '\Drupal\paragraphs_inline_entity_form\Form\ModalParagraphForm');
+
 
   //$entity_types['paragraph']->setFormClass('paragraphs_inline_entity_edit', '\Drupal\geysir\Form\GeysirModalParagraphForm');
 
@@ -62,13 +65,25 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
 
     switch ($step) {
       case 'embed':
-        $entity_uuid = $form['attributes']['entity-data-uuid']['#value'];
+        $entity_uuid = $form['attributes']['data-entity-uuid']['#value'];
         $temp_store->get('paragraphs_inline_entity_form')
           ->set('entity_data', $form['attributes']);
 
         $form['entity']['#markup'] = $entity_uuid;
 
         $form_state->set('entity_uuid', $entity_uuid);
+        $form['actions']['back3'] = [
+          '#type' => 'submit',
+          '#value' => t('Back'),
+          '#submit' => [],
+          '#ajax' => [
+            'url' => Url::fromRoute('paragraphs_inline_entity_form.modal.edit_form', [
+              'uuid' => $entity_uuid,
+            ]),
+            //'callback' => 'back4Submit',
+            'event' => 'click',
+          ],
+        ];
 
         $form['actions']['edit2'] = [
           '#type' => 'submit',
@@ -79,6 +94,7 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
             'event' => 'click',
           ],
         ];
+
         syslog(5, 'DDD stored data for ' . $entity_uuid);
         break;
 
@@ -97,15 +113,39 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
         ];
         unset($form['actions']);
         $form_state->set('entity_uuid', $entity_uuid);
-        $form['actions']['showedit'] = [
+
+        $form['actions']['back'] = [
           '#type' => 'submit',
-          '#value' => t('Edit'),
+          '#value' => t('Back'),
           '#submit' => [],
           '#ajax' => [
             'callback' => 'back4Submit',
             'event' => 'click',
           ],
         ];
+
+        $links['edit'] = [
+          'title' => t('Edit'),
+          'url' => Url::fromRoute('paragraphs_inline_entity_form.modal.edit_form', [
+            'uuid'              => $entity_uuid,
+          ]),
+          'attributes' => [
+            'class' => ['use-ajax', 'geysir-button'],
+            'data-dialog-type' => 'modal',
+          ],
+        ];
+        $links_array = [
+          '#theme'    => 'links',
+          '#links'    => $links,
+          '#attributes' => ['class' => ['geysir-field-paragraph-links', 'links']],
+          '#attached' => ['library' => ['core/drupal.dialog.ajax', 'geysir/geysir']],
+        ];
+        //$vars['items'][$delta]['content']['#theme_wrappers'][] = 'geysir_field_paragraph_wrapper';
+        $links = \Drupal::service('renderer')->render($links_array);
+        $form['links'] = [
+          '#markup' => $links,
+        ];
+
     }
 
     return;

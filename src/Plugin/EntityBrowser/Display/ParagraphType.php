@@ -53,8 +53,7 @@ class ParagraphType extends IFrame implements DisplayRouterInterface {
       ],
     ];
     $src = Url::fromRoute('entity_browser.' . $ebid, [], $data['query_parameters'])->toString();
-kint($entity_browser);exit;
-    return $entity_browser;
+    $src = 'node/add/page';
     return [
       '#theme_wrappers' => ['container'],
       '#attributes' => [

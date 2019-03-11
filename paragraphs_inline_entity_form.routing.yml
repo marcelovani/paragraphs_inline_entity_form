@@ -1,7 +1,7 @@
 paragraphs_inline_entity_form.edit.dialog:
   path: '/paragraph-inline-entity/dialog/{uuid}'
   defaults:
-    _controller: '\Drupal\paragraphs_inline_entity_form\Form\ParagraphsForm'
+    _controller: '\Drupal\paragraphs_inline_entity_form\Form\ParagraphForm'
   requirements:
     _permission: 'administer paragraphs types'
   options:
@@ -16,3 +16,32 @@ paragraphs_inline_entity_form.edit:
     _permission: 'administer paragraphs types'
   options:
     _admin_route: TRUE
+
+paragraphs_inline_entity_form.edit_form:
+  path: 'paragraphs_inline_entity_form/edit/{parent_entity_type}/{parent_entity_bundle}/{parent_entity_revision}/{field}/{field_wrapper_id}/{delta}/{paragraph}/{paragraph_revision}'
+  defaults:
+    _entity_form: 'paragraph.paragraphs_inline_entity_form_edit'
+  requirements:
+    _permission: 'paragraphs_inline_entity_form manage paragraphs from front-end'
+  options:
+    _admin_route: TRUE
+    parameters:
+      paragraph:
+        type: 'entity:paragraph'
+      paragraph_revision:
+        type: 'entity_revision:paragraph'
+paragraphs_inline_entity_form.modal.edit_form:
+  path: 'paragraphs_inline_entity_form/modal/edit/{uuid}'
+  defaults:
+    _title: 'Edit'
+    _controller: '\Drupal\paragraphs_inline_entity_form\Controller\ParagraphsController::edit'
+  requirements:
+    _permission: 'paragraphs_inline_entity_form manage paragraphs from front-end'
+    js: 'nojs|ajax'
+  options:
+    _admin_route: TRUE
+    parameters:
+      paragraph:
+        type: 'entity:paragraph'
+      paragraph_revision:
+        type: 'entity_revision:paragraph'

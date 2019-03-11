@@ -5,7 +5,6 @@ namespace Drupal\paragraphs_inline_entity_form\Controller;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\OpenModalDialogCommand;
-use Drupal\geysir\Ajax\GeysirOpenModalDialogCommand;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFieldManager;
@@ -17,10 +16,47 @@ use Drupal\Core\Ajax\HtmlCommand;
  */
 class ParagraphsController extends ControllerBase {
 
+
+  /**
+   * Create a modal dialog to edit a single paragraph.
+   */
+  public function edit($uuid) {
+      $entity_type_manager = \Drupal::service('entity_type.manager');
+
+      $entity = $entity_type_manager->getStorage('paragraph')
+        ->loadByProperties(['uuid' => $uuid]);
+
+      /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
+      $paragraph = current($entity);
+
+      $response = new AjaxResponse();
+      $form = $this->entityFormBuilder()->getForm($paragraph, 'paragraphs_inline_entity_modal_edit', []);
+      //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
+      //$response->addCommand(new ParagraphsOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => 'tttt']), render($form)));
+      //$response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));
+
+    $options  =
+        [
+          'modal' => TRUE,
+//          'resizable' => 'w',
+          'draggable' => TRUE,
+//          'dialogClass' => 'ui-dialog-off-canvas ui-dialog-position-' . 'side',
+          'width' => '80%', //@todo pick from browser embed config
+          'height' => '500',
+        ];
+      $response->addCommand(new OpenModalDialogCommand(t('Edit'), $form, $options));
+
+  //    $response->addCommand(new ParagraphsOpenModalDialogCommand('#entity-embed-dialog-form', $form));
+
+
+    return $response;
+  }
+
   /**
    * Edit a single paragraph.
    */
-  public function edit($uuid) {
+  public function xedit($uuid) {
+    //kint('aaa');
     $entity_type_manager = \Drupal::service('entity_type.manager');
 
     $entity = $entity_type_manager->getStorage('paragraph')

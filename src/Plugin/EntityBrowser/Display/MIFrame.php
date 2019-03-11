@@ -163,6 +163,10 @@ class MIFrame extends DisplayBase implements DisplayRouterInterface {
     $event_object = new AlterEntityBrowserDisplayData($this->configuration['entity_browser_id'], $this->getUuid(), $this->getPluginDefinition(), $form_state, $data);
     $event = $this->eventDispatcher->dispatch(Events::ALTER_BROWSER_DISPLAY_DATA, $event_object);
     $data = $event->getData();
+    $src = Url::fromRoute('entity_browser.' . $this->configuration['entity_browser_id'], [], $data['query_parameters'])->toString();
+    //$src = Url::fromRoute('paragraphs_inline_entity_form.edit.dialog', ['uuid' => '45e75bf5-bdcf-48af-b62d-ef1318aaa7a7'], $data['query_parameters'])->toString();
+    $src = 'node/add/page';
+    $src = '/paragraph-inline-entity/dialog/45e75bf5-bdcf-48af-b62d-ef1318aaa7a7';
     return [
       '#theme_wrappers' => ['container'],
       '#attributes' => [
@@ -184,8 +188,7 @@ class MIFrame extends DisplayBase implements DisplayRouterInterface {
               ],
               'iframe' => [
                 $this->getUuid() => [
-                  'src' => Url::fromRoute('entity_browser.' . $this->configuration['entity_browser_id'], [], $data['query_parameters'])
-                    ->toString(),
+                  'src' => $src,
                   'width' => $this->configuration['width'],
                   'height' => $this->configuration['height'],
                   'js_callbacks' => $callback_event->getCallbacks(),
