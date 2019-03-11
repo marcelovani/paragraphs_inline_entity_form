@@ -204,22 +204,11 @@ function back2Submit(array &$form, $form_state) {
 
 function back4Submit(array $form, $form_state) {
   $uuid = $form_state->get('entity_uuid');
-  syslog(5, 'DDD P uuid' . $uuid);
-
   $entity_type_manager = \Drupal::service('entity_type.manager');
-  syslog(5, 'DDD P 2 ' . $uuid);
-
   $entity = $entity_type_manager->getStorage('paragraph')
     ->loadByProperties(['uuid' => $uuid]);
-  syslog(5, 'DDD P 3 ' . $uuid);
-
   /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
   $paragraph = current($entity);
-  //syslog(5, 'DDD edit entity ' . var_export(get_class_methods($paragraph),1));
-  //syslog(5, 'DDD edit getEntityType ' . var_export($paragraph->getEntityType()->id(),1));
-  syslog(5, 'DDD P edit getEntityTypeId ' . $paragraph->getEntityTypeId());
-  syslog(5, 'DDD P edit uuid ' . $paragraph->uuid());
-
   $response = new AjaxResponse();
   /** @var \Drupal\Core\Entity\EntityFormBuilder $form_builder */
   $form_builder = \Drupal::service('entity.form_builder');
@@ -227,9 +216,9 @@ function back4Submit(array $form, $form_state) {
   //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
   //$response->addCommand(new GeysirOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => $paragraph_title]), render($form)));
 
-  $form_builder = \Drupal::service('form_builder');
-  $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $form);
-  unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
+//  $form_builder = \Drupal::service('form_builder');
+//  $rebuild_form = $form_builder->rebuildForm('entity_embed_dialog', $form_state, $form);
+//  unset($rebuild_form['#prefix'], $rebuild_form['#suffix']);
 
   $response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));
   $response->addCommand(new SetDialogTitleCommand('', 'Edit'));
