@@ -3,6 +3,8 @@
  * @file Module.
  */
 
+use Drupal\core\Url;
+
 /**
  * Implements hook_form_alter().
  */
@@ -11,5 +13,45 @@ function paragraphs_inline_entity_form_form_alter(&$form, \Drupal\Core\Form\Form
   $formObject = $form_state->getFormObject();
   if ($formObject instanceof \Drupal\Core\Entity\EntityFormInterface) {
     $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
+  }
+
+  if ($formObject instanceof \Drupal\entity_embed\Form\EntityEmbedDialog) {
+    if (paragraphs_inline_entity_embed_button_clicked($form)) {
+      switch ($form_state->get('step')) {
+        case 'embed':
+          // Change the back button to link to the paragraph edit form.
+          $entity_uuid = $form['attributes']['data-entity-uuid']['#value'];
+          $entity_type_manager = \Drupal::service('entity_type.manager');
+          $entity = $entity_type_manager->getStorage('paragraph')
+            ->loadByProperties(['uuid' => $entity_uuid]);
+          $paragraph = current($entity);
+
+          $form['actions']['back'] = [
+            '#type' => 'submit',
+            '#value' => t('Back'),
+            '#submit' => [],
+            '#ajax' => [
+              'url' => Url::fromRoute('entity_browser.edit_form', [
+                'entity_type' => 'paragraph',
+                'entity' => $paragraph->id(),
+              ]),
+              'event' => 'click',
+            ],
+          ];
+          break;
+      }
+    }
+  }
+}
+
+/**
+ * Checks that the browser type is a paragraph_item.
+ *
+ * @param $form The form
+ */
+function paragraphs_inline_entity_embed_button_clicked($form) {
+  if (isset($form['attributes']['data-embed-button'])
+    && $form['attributes']['data-embed-button']['#value'] == 'paragraphs_inline_entity_form') {
+    return TRUE;
   }
 }
