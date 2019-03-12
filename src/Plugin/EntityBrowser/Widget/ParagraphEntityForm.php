@@ -135,6 +135,8 @@ class ParagraphEntityForm extends EntityForm {
         $icon_url = $style->buildUrl($path);
       }
 
+      //@todo Use ajax url
+      //$src = Url::fromRoute('entity_browser.' . $ebid, [], $data['query_parameters'])->toString();
       $form['items'][$bundle] = [
         '#type' => 'image_button',
         '#prefix' => '<div class="paragraphs-wysiwyg-add-type">',

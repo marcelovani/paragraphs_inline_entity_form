@@ -37,7 +37,7 @@ class ParagraphType extends IFrame implements DisplayRouterInterface {
    * {@inheritdoc}
    */
   public function displayEntityBrowser(array $element, FormStateInterface $form_state, array &$complete_form, array $persistent_data = []) {
-    $entity_browser = parent::displayEntityBrowser($element, $form_state, $complete_form, $persistent_data);
+    //$entity_browser = parent::displayEntityBrowser($element, $form_state, $complete_form, $persistent_data);
     $width = $this->configuration['width'];
     $height = $this->configuration['height'];
     $ebid = $this->configuration['entity_browser_id'];
@@ -52,8 +52,9 @@ class ParagraphType extends IFrame implements DisplayRouterInterface {
         ],
       ],
     ];
-    $src = Url::fromRoute('entity_browser.' . $ebid, [], $data['query_parameters'])->toString();
-    $src = 'node/add/page';
+    //$src = Url::fromRoute('entity_browser.' . $ebid, [], $data['query_parameters'])->toString();
+    $src = Url::fromRoute('paragraphs_inline_entity_form.modal.select_form')->toString();
+
     return [
       '#theme_wrappers' => ['container'],
       '#attributes' => [
@@ -79,16 +80,16 @@ class ParagraphType extends IFrame implements DisplayRouterInterface {
             $this->getUuid() => [
               'auto_open' => TRUE,
             ],
-            'iframe' => [
-              $this->getUuid() => [
-                'src' => $src,
-                'width' => $width,
-                'height' => $height,
-                'js_callbacks' => $callback_event->getCallbacks(),
-                'entity_browser_id' => $ebid,
-                'auto_open' => TRUE,
-              ],
-            ],
+//            'iframe' => [
+//              $this->getUuid() => [
+//                'src' => $src,
+//                'width' => $width,
+//                'height' => $height,
+//                'js_callbacks' => $callback_event->getCallbacks(),
+//                'entity_browser_id' => $ebid,
+//                'auto_open' => TRUE,
+//              ],
+//            ],
           ],
         ],
       ],

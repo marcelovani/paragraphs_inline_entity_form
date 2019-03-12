@@ -10,12 +10,39 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFieldManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Ajax\HtmlCommand;
+//use Drupal\paragraphs_inline_entity_form\Form\ParagraphTypeForm;
 
 /**
  * Controller for all modal dialogs.
  */
 class ParagraphsController extends ControllerBase {
 
+  /**
+   * Displays the paragraph type selector.
+   */
+  public function select() {
+    $response = new AjaxResponse();
+
+    //$form = $this->formBuilder()->getForm('paragraph_type_selector', []);
+    $form = \Drupal::formBuilder()->getForm('\Drupal\paragraphs_inline_entity_form\Form\ParagraphTypeForm');
+
+    //$paragraph_title = $this->getParagraphTitle($parent_entity_type, $parent_entity_bundle, $field);
+    //$response->addCommand(new ParagraphsOpenModalDialogCommand($this->t('Edit @paragraph_title', ['@paragraph_title' => 'tttt']), render($form)));
+    //$response->addCommand(new HtmlCommand('#entity-embed-dialog-form', $form));
+
+    $options  =
+      [
+        'modal' => TRUE,
+      'draggable' => TRUE,
+//          'dialogClass' => 'ui-dialog-off-canvas ui-dialog-position-' . 'side',
+      'width' => '80%', //@todo pick from browser embed config
+      'height' => '500',
+    ];
+
+    $response->addCommand(new OpenModalDialogCommand(t('Select paragraph type'), $form, $options));
+
+    return $response;
+  }
 
   /**
    * Create a modal dialog to edit a single paragraph.
@@ -47,7 +74,7 @@ class ParagraphsController extends ControllerBase {
       $response->addCommand(new OpenModalDialogCommand(t('Edit'), $form, $options));
 
   //    $response->addCommand(new ParagraphsOpenModalDialogCommand('#entity-embed-dialog-form', $form));
-
+//@todo on submit, close the modal and update the text field widget
 
     return $response;
   }

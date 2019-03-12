@@ -8,6 +8,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Core\Url;
+
 /**
  * Provides a selector for paragraph type
  *
@@ -82,7 +84,7 @@ class ParagraphTypeForm extends FormBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('entity_type.bundle.info'),
-      $container->get('current_route_match'),
+      $container->get('current_route_match')
     );
   }
 
@@ -110,7 +112,10 @@ class ParagraphTypeForm extends FormBase {
     ];
     $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
 
-    $embed_button = $this->embedButtonStorage->load($form_state->getBuildInfo()['args'][0]);
+    $content_type = 'paragraphs_ief_example'; //@todo pass from the routing
+    //$embed_button = $this->embedButtonStorage->load($form_state->getBuildInfo()['args'][0]);
+    $entity_browser_id = 'paragraphs_inline_entity_form'; //@todo pass from the routing
+    $embed_button = $this->embedButtonStorage->load($entity_browser_id);
     $allowed_bundles = $embed_button->getTypeSetting('bundles');
     $bundles = $this->getAllowedBundles($allowed_bundles);
     $default_icon = drupal_get_path('module', 'paragraphs_inline_entity_form') . '/images/paragraph_thumb.png';
@@ -128,9 +133,18 @@ class ParagraphTypeForm extends FormBase {
         '#suffix' => '<span>' . $label . '</span></div>',
         '#src' => $icon_url,
         '#value' => $label,
-        '#attributes' => [
-          'data-paragraph-bundle' => $bundle,
-        ],
+        '#submit' => [],
+        //@todo add throbber
+        //$src = Url::fromRoute('entity_browser.' . $entity_browser_id, [], $data['query_parameters'])->toString();
+        //entity-embed/dialog/paragraphs_ief_example/paragraphs_inline_entity_form?_wrapper_format=drupal_modal
+        //entity-embed/dialog/paragraphs_ief_example/paragraphs_inline_entity_form
+        '#ajax' => [
+          'url' => Url::fromRoute('entity-embed/dialog/' . $content_type . '/' . $entity_browser_id),
+          'event' => 'click',
+        ]
+//        '#attributes' => [
+//          'data-paragraph-bundle' => $bundle,
+//        ],
       ];
     }
 
