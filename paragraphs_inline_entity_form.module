@@ -38,6 +38,12 @@ function paragraphs_inline_entity_form_form_alter(&$form, \Drupal\Core\Form\Form
               'event' => 'click',
             ],
           ];
+          //@todo update widget
+//          $details_id = $request->query->get('details_id');
+//          if (!empty($details_id)) {
+//            $response->addCommand(new ValueUpdatedCommand($details_id));
+//          }
+//          return $response;
           break;
       }
     }
