@@ -11,6 +11,7 @@ use Drupal\paragraphs\Entity\ParagraphsType;
 function paragraphs_inline_entity_form_example_install() {
   // Creates the paragraph icons.
   $embed_types = [
+    'block',
     'columns',
     'facebook',
     'gallery',

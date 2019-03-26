@@ -27,7 +27,7 @@ class ParagraphsIEFTests extends WebTestBase {
     'entity_reference',
     'paragraphs',
     'inline_entity_form',
-    'paragraphs_inline_entity_form'
+    'paragraphs_inline_entity_form_example'
   ];
 
   /**
