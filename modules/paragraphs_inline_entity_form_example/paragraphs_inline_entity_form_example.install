@@ -1,6 +1,6 @@
 <?php
 /**
- * @file Module.
+ * @file Install file.
  */
 
 use Drupal\paragraphs\Entity\ParagraphsType;

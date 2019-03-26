@@ -45,6 +45,7 @@ class ParagraphEntityForm extends EntityForm {
 
   /**
    * {@inheritdoc}
+   * 
    * @todo fix the edit form
    */
   public function getForm(array &$original_form, FormStateInterface $form_state, array $additional_widget_parameters) {
@@ -118,10 +119,7 @@ class ParagraphEntityForm extends EntityForm {
     $allowed_bundles = $embed_button->getTypeSetting('bundles');
     $bundles = $this->getAllowedBundles($allowed_bundles);
     $paragraphs_type_storage = $this->entityTypeManager->getStorage('paragraphs_type');
-
-    //@todo copy icon for entity embed, see entity_embed_update_8001()
     $default_icon = drupal_get_path('module', 'paragraphs_inline_entity_form') . '/images/paragraph_thumb.png';
-
     foreach ($bundles as $bundle => $label) {
       $icon_url = $default_icon;
       if ($paragraphs_type_storage->load($bundle)->getIconFile()) {
@@ -146,14 +144,6 @@ class ParagraphEntityForm extends EntityForm {
   }
 
   /**
-   * Get routeMatch()
-   * @todo use dependency injection.
-   */
-  protected function getRouteMatch() {
-    return \Drupal::routeMatch();
-  }
-
-  /**
    * Returns a list of allowed Paragraph bundles to add.
    *
    * @param array $allowed_bundles
@@ -163,9 +153,7 @@ class ParagraphEntityForm extends EntityForm {
    *   Array with allowed Paragraph bundles.
    */
   protected function getAllowedBundles($allowed_bundles = NULL) {
-    //@todo use dependency injection.
-    $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo('paragraph');
-
+    $bundles = $this->entityTypeBundleInfo->getBundleInfo('paragraph');
     if (is_array($allowed_bundles) && count($allowed_bundles)) {
       // Preserve order of allowed bundles setting.
       $allowed_bundles_order = array_flip($allowed_bundles);
