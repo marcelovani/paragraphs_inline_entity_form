@@ -146,14 +146,6 @@ class ParagraphEntityForm extends EntityForm {
   }
 
   /**
-   * Get routeMatch()
-   * @todo use dependency injection.
-   */
-  protected function getRouteMatch() {
-    return \Drupal::routeMatch();
-  }
-
-  /**
    * Returns a list of allowed Paragraph bundles to add.
    *
    * @param array $allowed_bundles
@@ -163,8 +155,7 @@ class ParagraphEntityForm extends EntityForm {
    *   Array with allowed Paragraph bundles.
    */
   protected function getAllowedBundles($allowed_bundles = NULL) {
-    //@todo use dependency injection.
-    $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo('paragraph');
+    $bundles = $this->entityTypeBundleInfo->getBundleInfo('paragraph');
 
     if (is_array($allowed_bundles) && count($allowed_bundles)) {
       // Preserve order of allowed bundles setting.
