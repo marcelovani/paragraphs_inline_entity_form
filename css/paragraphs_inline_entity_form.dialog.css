@@ -33,17 +33,6 @@ body.page--entity_browser-paragraph_type-paragraph_items #main-content .block-pa
   min-height: 5px;
 }
 
-body.page--entity_browser-paragraph_type-paragraph_items #main-content h1 {
-  /*display: none;*/
-}
-
 body.page--entity_browser-paragraph_type-paragraph_items #main-content .page-content {
   margin-bottom: 0;
 }
-
-/*#edit-inline-entity-form .js-form-item label {*/
-/*display: block;*/
-/*font-size: x-large;*/
-/*color: black;*/
-/*font-weight: bolder;*/
-/*}*/

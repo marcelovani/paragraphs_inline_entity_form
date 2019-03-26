@@ -16,8 +16,12 @@ function paragraphs_inline_entity_form_form_alter(&$form, \Drupal\Core\Form\Form
   }
 
   if ($formObject instanceof \Drupal\entity_embed\Form\EntityEmbedDialog) {
-    if (paragraphs_inline_entity_embed_button_clicked($form)) {
+    if (paragraphs_inline_entity_form_entity_browser_is_paragraph_item($form)) {
+      $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
       switch ($form_state->get('step')) {
+        case 'select':
+          break;
+
         case 'embed':
           // Change the back button to link to the paragraph edit form.
           $entity_uuid = $form['attributes']['data-entity-uuid']['#value'];
@@ -53,9 +57,14 @@ function paragraphs_inline_entity_form_form_alter(&$form, \Drupal\Core\Form\Form
 /**
  * Checks that the browser type is a paragraph_item.
  *
- * @param $form The form
+ * @param $form The form.
+ * @return TRUE If it is a paragraph_item entity browser.
  */
-function paragraphs_inline_entity_embed_button_clicked($form) {
+function paragraphs_inline_entity_form_entity_browser_is_paragraph_item($form) {
+  if (isset($form['entity_browser']['#entity_browser'])
+    && $form['entity_browser']['#entity_browser'] == 'paragraph_items') {
+    return TRUE;
+  }
   if (isset($form['attributes']['data-embed-button'])
     && $form['attributes']['data-embed-button']['#value'] == 'paragraphs_inline_entity_form') {
     return TRUE;
