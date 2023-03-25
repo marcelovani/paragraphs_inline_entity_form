@@ -1,7 +1,6 @@
 name: Paragraphs Inline Entity Form
 type: module
 description: 'Paragraphs selector for Entity Browser and integration with Entity Embed Wysiwyg'
-core: 8.x
 core_version_requirement: ^8 || ^9
 package: Paragraphs
 dependencies:

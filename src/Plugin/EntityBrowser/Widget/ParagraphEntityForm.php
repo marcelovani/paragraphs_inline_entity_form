@@ -119,7 +119,7 @@ class ParagraphEntityForm extends EntityForm {
     $allowed_bundles = $embed_button->getTypeSetting('bundles');
     $bundles = $this->getAllowedBundles($allowed_bundles);
     $paragraphs_type_storage = $this->entityTypeManager->getStorage('paragraphs_type');
-    $default_icon = drupal_get_path('module', 'paragraphs_inline_entity_form') . '/images/paragraph_thumb.png';
+    $default_icon = \Drupal::service('extension.path.resolver')->getPath('module', 'paragraphs_inline_entity_form') . '/images/paragraph_thumb.png';
     foreach ($bundles as $bundle => $label) {
       $icon_url = $default_icon;
       if ($paragraphs_type_storage->load($bundle)->getIconFile()) {

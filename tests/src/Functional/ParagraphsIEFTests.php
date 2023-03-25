@@ -23,11 +23,10 @@ class ParagraphsIEFTests extends BrowserTestBase {
    */
   protected static $modules = [
     'node',
-    'ckeditor',
+    'ckeditor5',
     'entity',
     'entity_browser',
     'entity_embed',
-    'entity_reference',
     'paragraphs',
     'inline_entity_form',
     'paragraphs_inline_entity_form',
@@ -44,7 +43,7 @@ class ParagraphsIEFTests extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create admin user.
@@ -54,7 +53,7 @@ class ParagraphsIEFTests extends BrowserTestBase {
   /**
    * Admin UI.
    */
-  public function testAdminUI() {
+  public function testAdminUI(): void {
     $this->drupalLogin($this->adminUser);
   }
 }

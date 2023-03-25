@@ -11,9 +11,9 @@ use Drupal\Core\File\FileSystemInterface;
  */
 function paragraphs_inline_entity_form_install() {
   // Set the default icon.
-  $icon = drupal_get_path('module', 'paragraphs_inline_entity_form') . '/images/paragraph_icon.png';
+  $icon = \Drupal::service('extension.path.resolver')->getPath('module', 'paragraphs_inline_entity_form') . '/images/paragraph_icon.png';
   $data = file_get_contents($icon);
-  if ($file = file_save_data($data, 'public://paragraph_icon.png', FileSystemInterface::EXISTS_REPLACE)) {
+  if ($file = \Drupal::service('file.repository')->writeData($data, 'public://paragraph_icon.png', FileSystemInterface::EXISTS_REPLACE)) {
     if ($embed_button = EmbedButton::load('paragraphs_inline_entity_form')) {
       $embed_button->set('icon_uuid', $file->uuid());
       $embed_button->save();

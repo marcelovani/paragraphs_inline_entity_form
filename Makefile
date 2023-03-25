@@ -23,6 +23,16 @@ build-local-9:
 	    -d marcelovani/drupalci:9-apache-interactive
 	make build-local
 
+# Start container and build Drupal 10 locally
+build-local-10:
+	docker run --rm --name drupalci_${PROJECT_NAME} \
+	    -v ${PWD}/:/var/www/html/web/modules/contrib/${PROJECT_NAME} \
+	    -v ${PWD}/../modules/:/var/www/html/web/modules \
+	    -v ${PWD}/../artifacts:/artifacts \
+	    -p ${PROJECT_PORT}:80 \
+	    -d marcelovani/drupalci:10-apache-interactive
+	make build-local
+
 build-local:
 	docker exec -i drupalci_${PROJECT_NAME} bash -c "composer require ${DEPENDENCIES}"
 	docker exec -i drupalci_${PROJECT_NAME} bash -c "sudo -u www-data php web/core/scripts/drupal install standard"
@@ -56,6 +66,15 @@ test-9:
 	docker run --name drupalci_${PROJECT_NAME} \
 	    -v ~/artifacts:/artifacts \
 	    --rm marcelovani/drupalci:9-apache \
+	    --project ${PROJECT_NAME} \
+	    --version dev-1.x \
+	    --dependencies ${DEPENDENCIES}
+
+# Test in non-interactive mode
+test-10:
+	docker run --name drupalci_${PROJECT_NAME} \
+	    -v ~/artifacts:/artifacts \
+	    --rm marcelovani/drupalci:10-apache \
 	    --project ${PROJECT_NAME} \
 	    --version dev-1.x \
 	    --dependencies ${DEPENDENCIES}
