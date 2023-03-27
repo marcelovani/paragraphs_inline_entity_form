@@ -2,9 +2,10 @@ langcode: en
 status: true
 dependencies:
   content:
-    - 'file:file:0f8b85ce-a195-4e6e-b77c-966f5795ae96'
+    - 'file:file:66e737bc-ee6f-4d88-8855-74b77be1344e'
 id: paragraphs_ief_instagram
 label: Instagram
-icon_uuid: 0f8b85ce-a195-4e6e-b77c-966f5795ae96
+icon_uuid: 66e737bc-ee6f-4d88-8855-74b77be1344e
+icon_default: null
 description: ''
 behavior_plugins: {  }

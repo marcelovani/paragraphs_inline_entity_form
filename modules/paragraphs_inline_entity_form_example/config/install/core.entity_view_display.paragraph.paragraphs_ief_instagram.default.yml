@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.paragraphs_ief_instagram.field_ief_embed
+    - paragraphs.paragraphs_type.paragraphs_ief_instagram
+  module:
+    - text
+id: paragraph.paragraphs_ief_instagram.default
+targetEntityType: paragraph
+bundle: paragraphs_ief_instagram
+mode: default
+content:
+  field_ief_embed:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }
