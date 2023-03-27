@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.paragraphs_ief_twitter.field_twitter_embed
+    - paragraphs.paragraphs_type.paragraphs_ief_twitter
+  module:
+    - text
+id: paragraph.paragraphs_ief_twitter.default
+targetEntityType: paragraph
+bundle: paragraphs_ief_twitter
+mode: default
+content:
+  field_twitter_embed:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }
