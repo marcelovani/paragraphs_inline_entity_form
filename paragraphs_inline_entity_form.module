@@ -40,7 +40,7 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
             '#submit' => [],
             '#attributes' => [
               'onclick' => [
-                'window.ckeditorSaveCallback=Drupal.ckeditor.saveCallback'
+                'window.ckeditorSaveCallback = window.ckeditorSaveCallback || []; window.ckeditorSaveCallback[\'' . $entity_uuid . '\'] = Drupal.ckeditor.saveCallback'
               ],
             ],
             '#ajax' => [
