@@ -15,7 +15,7 @@ function paragraphs_inline_entity_form_install() {
   $data = file_get_contents($icon);
   if ($file = \Drupal::service('file.repository')->writeData($data, 'public://paragraph_icon.png', FileSystemInterface::EXISTS_REPLACE)) {
     if ($embed_button = EmbedButton::load('paragraphs_inline_entity_form')) {
-      $embed_button->set('icon_uuid', $file->uuid());
+      $embed_button->set('icon', EmbedButton::convertImageToEncodedData($file->getFileUri()));
       $embed_button->save();
     }
   }
