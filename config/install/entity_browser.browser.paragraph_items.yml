@@ -4,7 +4,7 @@ dependencies:
   module:
     - paragraphs_inline_entity_form
 _core:
-  default_config_hash: urkEsCVNGFL3HKX3o3f1JdFi11WXQlQUKmbMwwZdcws
+  default_config_hash: RisSMv6kaqw1Ye03HMnAydbch76lW9Nrgt3WwjTja9w
 name: paragraph_items
 label: 'Paragraph items'
 display: iframe
@@ -18,13 +18,13 @@ selection_display_configuration: {  }
 widget_selector: single
 widget_selector_configuration: {  }
 widgets:
-  ff4d0944-7778-4ce4-8d23-e9e6fcca4865:
+  dd24ccf7-94a7-46ab-ae17-f470e3fd6229:
+    id: paragraph_entity_form
+    uuid: dd24ccf7-94a7-46ab-ae17-f470e3fd6229
+    label: paragraph_entity_form
+    weight: 1
     settings:
-      entity_type: paragraph
       submit_text: 'Save paragraph'
+      entity_type: paragraph
       bundle: '0'
       form_mode: default
-    uuid: ff4d0944-7778-4ce4-8d23-e9e6fcca4865
-    weight: 1
-    label: paragraph_entity_form
-    id: paragraph_entity_form

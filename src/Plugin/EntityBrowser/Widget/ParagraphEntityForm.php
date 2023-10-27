@@ -35,9 +35,13 @@ class ParagraphEntityForm extends EntityForm {
     $form = parent::buildConfigurationForm($form, $form_state);
 
     $form['bundle'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Bundle'),
-      '#options' => ['Paragraph Selector'],
+      '#type' => 'container',
+      'select' => [
+        '#type' => 'select',
+        '#title' => $this->t('Bundle'),
+        '#options' => ['Paragraph Selector'],
+      ],
+      '#attributes' => ['id' => 'bundle-wrapper-' . $this->uuid()],
     ];
 
     return $form;

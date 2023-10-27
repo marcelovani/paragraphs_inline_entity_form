@@ -1,10 +1,10 @@
 name: Paragraphs Inline Entity Form
 type: module
 description: 'Paragraphs selector for Entity Browser and integration with Entity Embed Wysiwyg'
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 package: Paragraphs
 dependencies:
-  - drupal:ckeditor
+  - drupal:ckeditor5
   - paragraphs:paragraphs
   - entity:entity
   - entity_embed:entity_embed
