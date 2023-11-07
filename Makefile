@@ -87,6 +87,9 @@ test-10:
 	    --version dev-1.x \
 	    --dependencies ${DEPENDENCIES}
 
+copy-results:
+	docker exec -it drupalci_${PROJECT_NAME} bash -c 'rm -rf /artifacts/*; cp -a /var/www/html/web/sites/simpletest /artifacts'
+
 open:
 	open "http://$(PROJECT_BASE_URL):${PROJECT_PORT}"
 

@@ -8,6 +8,8 @@ use Drupal\Tests\BrowserTestBase;
  * Paragraphs IEF tests.
  *
  * @group paragraphs_inline_entity_form
+ *
+ * @package Drupal\Tests\paragraphs_inline_entity_form\Functional
  */
 class ParagraphsIEFTests extends BrowserTestBase {
 
