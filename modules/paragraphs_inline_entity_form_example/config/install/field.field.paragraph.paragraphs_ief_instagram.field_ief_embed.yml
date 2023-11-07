@@ -17,7 +17,7 @@ translatable: true
 default_value:
   -
     value: ' '
-    format: restricted_html
+    format: embed
 default_value_callback: ''
 settings: {  }
 field_type: text_long

@@ -5,21 +5,33 @@ dependencies:
     - field.field.paragraph.paragraphs_ief_view.field_ief_view
     - paragraphs.paragraphs_type.paragraphs_ief_view
   module:
-    - entity_reference_revisions
+    - entity_browser_entity_form
+    - inline_entity_form
 id: paragraph.paragraphs_ief_view.default
 targetEntityType: paragraph
 bundle: paragraphs_ief_view
 mode: default
 content:
   field_ief_view:
+    type: inline_entity_form_complex
     weight: 0
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: entity_reference_revisions_autocomplete
     region: content
+    settings:
+      form_mode: default
+      override_labels: false
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      allow_duplicate: false
+      collapsible: false
+      collapsed: false
+      revision: false
+      removed_reference: optional
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: _none
 hidden:
   created: true
   status: true

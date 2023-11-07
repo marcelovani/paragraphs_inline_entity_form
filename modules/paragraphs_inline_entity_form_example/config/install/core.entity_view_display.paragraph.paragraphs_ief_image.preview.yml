@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.preview
+    - field.field.paragraph.paragraphs_ief_image.field_ief_image
+    - paragraphs.paragraphs_type.paragraphs_ief_image
+  module:
+    - image
+id: paragraph.paragraphs_ief_image.preview
+targetEntityType: paragraph
+bundle: paragraphs_ief_image
+mode: preview
+content:
+  field_ief_image:
+    type: image
+    label: above
+    settings:
+      image_link: ''
+      image_style: ''
+      image_loading:
+        attribute: lazy
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

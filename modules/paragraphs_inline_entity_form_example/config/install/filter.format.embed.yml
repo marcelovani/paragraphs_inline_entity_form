@@ -1,0 +1,24 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - entity_embed
+name: Embed
+format: embed
+weight: 0
+filters:
+  entity_embed:
+    id: entity_embed
+    provider: entity_embed
+    status: true
+    weight: 100
+    settings: {  }
+  filter_html:
+    id: filter_html
+    provider: filter
+    status: true
+    weight: -10
+    settings:
+      allowed_html: "<a href hreflang> <iframe src width height title scrolling frameborder allow allowfullscreen> <em> <strong> <cite> <blockquote cite class data-instgrm-permalink style> <code> <ul type> <ol start type='1 A I'> <li> <dl> <dt> <dd> <h2 id='jump-*'> <h3 id> <h4 id> <h5 id> <h6 id>"
+      filter_html_help: true
+      filter_html_nofollow: false

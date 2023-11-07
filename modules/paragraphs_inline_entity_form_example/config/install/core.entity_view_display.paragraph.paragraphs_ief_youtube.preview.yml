@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.preview
+    - field.field.paragraph.paragraphs_ief_youtube.field_ief_embed
+    - paragraphs.paragraphs_type.paragraphs_ief_youtube
+  module:
+    - text
+id: paragraph.paragraphs_ief_youtube.preview
+targetEntityType: paragraph
+bundle: paragraphs_ief_youtube
+mode: preview
+content:
+  field_ief_embed:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

@@ -2,22 +2,22 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.paragraph.field_twitter_embed
+    - field.storage.paragraph.field_ief_embed
     - paragraphs.paragraphs_type.paragraphs_ief_twitter
   module:
     - text
-id: paragraph.paragraphs_ief_twitter.field_twitter_embed
-field_name: field_twitter_embed
+id: paragraph.paragraphs_ief_twitter.field_ief_embed
+field_name: field_ief_embed
 entity_type: paragraph
 bundle: paragraphs_ief_twitter
-label: 'Twitter embed'
+label: 'Twitter Embed'
 description: 'Copy and paste the Twitter embed code'
 required: false
-translatable: false
+translatable: true
 default_value:
   -
     value: ' '
-    format: restricted_html
+    format: embed
 default_value_callback: ''
 settings: {  }
 field_type: text_long

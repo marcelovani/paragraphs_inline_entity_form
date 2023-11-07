@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.preview
+    - field.field.paragraph.paragraphs_ief_text.field_ief_text
+    - paragraphs.paragraphs_type.paragraphs_ief_text
+  module:
+    - text
+id: paragraph.paragraphs_ief_text.preview
+targetEntityType: paragraph
+bundle: paragraphs_ief_text
+mode: preview
+content:
+  field_ief_text:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

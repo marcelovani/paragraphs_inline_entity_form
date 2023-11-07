@@ -35,7 +35,15 @@ build-local-10:
 
 build-local:
 	docker exec -i drupalci_${PROJECT_NAME} bash -c "composer require ${DEPENDENCIES}"
+
+install-local:
 	docker exec -i drupalci_${PROJECT_NAME} bash -c "sudo -u www-data php web/core/scripts/drupal install standard"
+
+reinstall-local:
+	docker exec -it drupalci_paragraphs_inline_entity_form bash -c "rm -rf web/sites/default/files";
+	docker exec -it drupalci_paragraphs_inline_entity_form bash -c "rm -rf web/sites/default/settings.php;";
+	docker exec -it drupalci_paragraphs_inline_entity_form bash -c "chmod 777 web/sites/default;";
+	make install-local
 
 # Test local build
 test-local:

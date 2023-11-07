@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.paragraph.paragraphs_ief_twitter.field_twitter_embed
+    - field.field.paragraph.paragraphs_ief_twitter.field_ief_embed
     - paragraphs.paragraphs_type.paragraphs_ief_twitter
   module:
     - text
@@ -11,13 +11,13 @@ targetEntityType: paragraph
 bundle: paragraphs_ief_twitter
 mode: default
 content:
-  field_twitter_embed:
+  field_ief_embed:
     type: text_textarea
     weight: 0
     region: content
     settings:
       rows: 5
-      placeholder: 'Copy and paste the Twitter embed code here'
+      placeholder: ''
     third_party_settings: {  }
 hidden:
   created: true

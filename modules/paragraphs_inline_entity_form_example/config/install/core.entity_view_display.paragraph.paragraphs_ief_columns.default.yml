@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.paragraphs_ief_columns.field_ief_text
+    - paragraphs.paragraphs_type.paragraphs_ief_columns
+  module:
+    - text
+id: paragraph.paragraphs_ief_columns.default
+targetEntityType: paragraph
+bundle: paragraphs_ief_columns
+mode: default
+content:
+  field_ief_text:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

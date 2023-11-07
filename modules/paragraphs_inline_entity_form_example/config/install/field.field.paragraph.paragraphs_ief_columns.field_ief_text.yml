@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_ief_text
+    - paragraphs.paragraphs_type.paragraphs_ief_columns
+  module:
+    - text
+id: paragraph.paragraphs_ief_columns.field_ief_text
+field_name: field_ief_text
+entity_type: paragraph
+bundle: paragraphs_ief_columns
+label: Columns
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: '<table style="width:100%;"><tbody><tr><th>Column 1</th><th>Column 2</th></tr><tr><th>&nbsp;</th><th>&nbsp;</th></tr></tbody></table>'
+    format: full_html
+default_value_callback: ''
+settings: {  }
+field_type: text_long

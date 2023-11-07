@@ -9,7 +9,6 @@ dependencies:
     - paragraphs
     - path
     - text
-    - datetime
 id: node.paragraphs_ief_example.default
 targetEntityType: node
 bundle: paragraphs_ief_example
