@@ -2,12 +2,12 @@
 
 namespace Drupal\paragraphs_inline_entity_form\Plugin\EntityBrowser\Widget;
 
-use Drupal\entity_browser_entity_form\Plugin\EntityBrowser\Widget\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\entity_browser_entity_form\Plugin\EntityBrowser\Widget\EntityForm;
 
 /**
  * A wrapper for EntityForm to provide a two step form where on the first step
- * the user can select the Entity type and on the second step, to create content
+ * the user can select the Entity type and on the second step, to create content.
  *
  * @EntityBrowserWidget(
  *   id = "paragraph_entity_form",
@@ -23,9 +23,9 @@ class ParagraphEntityForm extends EntityForm {
    */
   public function defaultConfiguration() {
     return [
-        'entity_type' => 'paragraph',
-        'submit_text' => $this->t('Save paragraph'),
-      ] + parent::defaultConfiguration();
+      'entity_type' => 'paragraph',
+      'submit_text' => $this->t('Save paragraph'),
+    ] + parent::defaultConfiguration();
   }
 
   /**
@@ -55,7 +55,7 @@ class ParagraphEntityForm extends EntityForm {
       return ['#markup' => $this->t('The settings for %label widget are not configured correctly.', ['%label' => $this->label()])];
     }
 
-    // Check if we need to show the content type selector form or the entity create form
+    // Check if we need to show the content type selector form or the entity create form.
     if (!empty($form_state->getUserInput()['selected_bundle'])) {
       $this->configuration['bundle'] = $form_state->getUserInput()['selected_bundle'];
     }
@@ -72,7 +72,7 @@ class ParagraphEntityForm extends EntityForm {
     $form = parent::getForm($original_form, $form_state, $additional_widget_parameters);
 
     $form['#submit'] = [
-      ['Drupal\inline_entity_form\ElementSubmit', 'trigger']
+      ['Drupal\inline_entity_form\ElementSubmit', 'trigger'],
     ];
     $form['actions'] = [
       '#type' => 'actions',
@@ -121,7 +121,7 @@ class ParagraphEntityForm extends EntityForm {
     $allowed_bundles = $embed_button->getTypeSetting('bundles');
     $bundles = $this->getAllowedBundles($allowed_bundles);
     $paragraphs_type_storage = $this->entityTypeManager->getStorage('paragraphs_type');
-    $default_icon = \Drupal::service('extension.path.resolver')->getPath('module', 'paragraphs_inline_entity_form') . '/images/paragraph_thumb.png';
+    $default_icon = \Drupal::service('extension.list.module')->getPath('paragraphs_inline_entity_form') . '/images/paragraph_thumb.png';
     foreach ($bundles as $bundle => $label) {
       $icon_url = $default_icon;
       if ($paragraphs_type_storage->load($bundle)->getIconFile()) {

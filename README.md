@@ -27,7 +27,7 @@ The main differences are:
 1) Edit the 'Paragraphs' Embed type in /admin/config/content/embed and select the bundles
 1) Configure the Wysiwyg editor in /admin/config/content/formats and add the button to embed `Paragraphs`
    Select `Display embedded entities`
-   Make sure you have `<drupal-entity data-entity-type data-entity-uuid data-entity-embed-display data-entity-embed-display-settings data-align data-caption data-embed-button>` in Allowed HTML tags
+   Make sure you have the html tags from [the example module](https://git.drupalcode.org/project/paragraphs_inline_entity_form/-/blob/8.x-1.x/modules/paragraphs_inline_entity_form_example/config/install/filter.format.paragraphs_ief_example.yml?ref_type=heads#L16) in Allowed HTML tags
  
 ## Todo
 - Support for nested paragraphs. It doesn't play well with Bootstrap Paragraphs

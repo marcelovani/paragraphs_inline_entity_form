@@ -12,7 +12,7 @@ use Drupal\entity_embed\Form\EntityEmbedDialog;
  * Implements hook_form_alter().
  */
 function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  /* @var Drupal\Core\Entity\FieldableEntityInterface $entity */
+  /** @var Drupal\Core\Entity\FieldableEntityInterface $entity */
   $formObject = $form_state->getFormObject();
   if ($formObject instanceof EntityFormInterface) {
     $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
@@ -23,7 +23,7 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
       $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
       switch ($form_state->get('step')) {
         case 'select':
-            // do nothing.
+          // do nothing.
           break;
 
         case 'embed':
@@ -60,8 +60,11 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
 /**
  * Checks that the browser type is a paragraph_item.
  *
- * @param $form The form.
- * @return TRUE If it is a paragraph_item entity browser.
+ * @param $form
+ *  The form.
+ *
+ * @return boolean
+ *  True if it is a paragraph_item entity browser.
  */
 function paragraphs_inline_entity_form_entity_browser_is_paragraph_item($form) {
   if (isset($form['entity_browser']['#entity_browser'])
