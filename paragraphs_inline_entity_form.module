@@ -1,17 +1,20 @@
 <?php
+
 /**
- * @file Module.
+ * @file
+ * Module.
  */
 
-use Drupal\Core\Url;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityFormInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\entity_embed\Form\EntityEmbedDialog;
 
 /**
  * Implements hook_form_alter().
  */
-function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $form_state): void {
   /** @var Drupal\Core\Entity\FieldableEntityInterface $entity */
   $formObject = $form_state->getFormObject();
   if ($formObject instanceof EntityFormInterface) {
@@ -23,7 +26,7 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
       $form['#attached']['library'][] = 'paragraphs_inline_entity_form/dialog';
       switch ($form_state->get('step')) {
         case 'select':
-          // do nothing.
+          // Do nothing.
           break;
 
         case 'embed':
@@ -38,11 +41,6 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
             '#type' => 'submit',
             '#value' => t('Edit paragraph'),
             '#submit' => [],
-            '#attributes' => [
-              'onclick' => [
-                'window.ckeditorSaveCallback = window.ckeditorSaveCallback || []; window.ckeditorSaveCallback[\'' . $entity_uuid . '\'] = Drupal.ckeditor.saveCallback'
-              ],
-            ],
             '#ajax' => [
               'url' => Url::fromRoute('entity_browser.edit_form', [
                 'entity_type' => 'paragraph',
@@ -60,13 +58,13 @@ function paragraphs_inline_entity_form_form_alter(&$form, FormStateInterface $fo
 /**
  * Checks that the browser type is a paragraph_item.
  *
- * @param $form
- *  The form.
+ * @param array $form
+ *   The form.
  *
- * @return boolean
- *  True if it is a paragraph_item entity browser.
+ * @return bool
+ *   True if it is a paragraph_item entity browser.
  */
-function paragraphs_inline_entity_form_entity_browser_is_paragraph_item($form) {
+function paragraphs_inline_entity_form_entity_browser_is_paragraph_item(array $form): bool {
   if (isset($form['entity_browser']['#entity_browser'])
     && $form['entity_browser']['#entity_browser'] == 'paragraph_items') {
     return TRUE;
@@ -75,4 +73,14 @@ function paragraphs_inline_entity_form_entity_browser_is_paragraph_item($form) {
     && $form['attributes']['data-embed-button']['#value'] == 'paragraphs_inline_entity_form') {
     return TRUE;
   }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_entity_embed_values_alter().
+ */
+function paragraphs_inline_entity_form_entity_embed_values_alter(array &$values, ContentEntityInterface $entity): void {
+  // Add dummy value to trigger a refresh of the embedded content preview.
+  $values['attributes']['alt'] = $values['attributes']['data-editor-embed-uuid'];
 }

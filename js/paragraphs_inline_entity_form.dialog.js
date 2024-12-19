@@ -3,26 +3,28 @@
  * Provides additional javascript for managing the paragraph wysiwyg dialog.
  */
 
-(function($) {
+(function ($) {
   'use strict';
 
-  $('.paragraphs-wysiwyg-add-type .form-submit').click(function() {
+  let saveCallback = undefined;
+
+  $('.paragraphs-wysiwyg-add-type .form-submit').click(function () {
     this.form.elements.namedItem('selected_bundle').value = this.attributes['data-paragraph-bundle'].value;
   });
 
-  // When we are editing an entity that was already on the body copy, the Embed button doesn't update the changes.
-  // This happens because when we open the second Modal Dialog, the first one loses the reference.
-  // This is a little trick to reinstate the callback. Its not beautiful, but works beautifully.
-  $(window).on('editor:dialogsave', function (e, values) {
-    if (typeof window.ckeditorSaveCallback !== 'object'
-      || values.attributes === 'undefined'
-      || values.attributes['data-entity-uuid'] === 'undefined'
-      || typeof window.ckeditorSaveCallback[values.attributes['data-entity-uuid']] === 'undefined') {
-      return;
+  // Store the save callback function for use when the dialog is closed. This allows the dialog to trigger the save callback when closed.
+  // This also solves the issue where the embedded paragraph is not updated when the dialog is closed.
+  $(window).on('dialog:beforeclose', (e, dialog, element) => {
+    if (element.hasOwnProperty(0) && element[0].getAttribute('id').match(/paragraph-\d+-edit-dialog/)) {
+      saveCallback = Drupal.ckeditor5.saveCallback;
     }
-    values.attributes['rnd'] = Math.random();
-    Drupal.ckeditor.saveCallback = window.ckeditorSaveCallback[values.attributes['data-entity-uuid']];
-    Drupal.ckeditor.saveCallback(values);
+  });
+
+  $(window).on('editor:dialogsave', function (e, values) {
+    if (saveCallback !== undefined && typeof saveCallback === 'function') {
+      saveCallback(values);
+      saveCallback = undefined;
+    }
   });
 
 })(jQuery);
